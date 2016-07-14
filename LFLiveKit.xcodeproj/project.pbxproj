@@ -402,12 +402,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 84001F9E1D0015D10026C63F /* Build configuration list for PBXNativeTarget "LFLiveKit" */;
 			buildPhases = (
-				8EE9401DCA9508E918B7FB68 /* 📦 Check Pods Manifest.lock */,
+				8EE9401DCA9508E918B7FB68 /* [CP] Check Pods Manifest.lock */,
 				84001F851D0015D10026C63F /* Sources */,
 				84001F861D0015D10026C63F /* Frameworks */,
 				84001F871D0015D10026C63F /* Headers */,
 				84001F881D0015D10026C63F /* Resources */,
-				817C22141AD3F2EB34365AA3 /* 📦 Copy Pods Resources */,
+				817C22141AD3F2EB34365AA3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -489,14 +489,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		817C22141AD3F2EB34365AA3 /* 📦 Copy Pods Resources */ = {
+		817C22141AD3F2EB34365AA3 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -504,14 +504,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LFLiveKit/Pods-LFLiveKit-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		8EE9401DCA9508E918B7FB68 /* 📦 Check Pods Manifest.lock */ = {
+		8EE9401DCA9508E918B7FB68 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
