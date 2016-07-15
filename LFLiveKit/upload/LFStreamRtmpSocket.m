@@ -13,6 +13,7 @@ static const NSInteger RetryTimesBreaken =
 20;  ///<  重连1分钟  3秒一次 一共20次
 static const NSInteger RetryTimesMargin = 3;
 
+#define RTMP_RECEIVE_TIMEOUT 2
 #define DATA_ITEMS_MAX_COUNT 100
 #define RTMP_DATA_RESERVE_SIZE 400
 #define RTMP_HEAD_SIZE (sizeof(RTMPPacket) + RTMP_MAX_HEADER_SIZE)
@@ -128,9 +129,11 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
             LFVideoFrame *videoFrame = (LFVideoFrame *)frame;
             if (videoFrame.isKeyFrame) {
                 self.isFirstKeyframeSended = YES;
-                [self performSelector:@selector(startAudioSending)
-                           withObject:nil
-                           afterDelay:0.5];
+                dispatch_after(
+                               dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)),
+                               dispatch_get_main_queue(), ^{
+                                   self.isAudioSendStart = YES;
+                               });
             } else {
                 return;
             }
@@ -150,10 +153,6 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
     _delegate = delegate;
 }
 
-- (void)startAudioSending {
-    self.isAudioSendStart = YES;
-}
-
 #pragma mark-- CustomMethod
 - (void)sendFrame {
     if (!self.isSending && self.buffer.list.count > 0) {
@@ -165,7 +164,7 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
         LFFrame *frame = [self.buffer popFirstObject];
         if ([frame isKindOfClass:[LFVideoFrame class]]) {
             if (!self.sendVideoHead) {
-                // self.sendVideoHead = YES;
+                self.sendVideoHead = YES;
                 [self sendVideoHeader:(LFVideoFrame *)frame];
             } else {
                 [self sendVideo:(LFVideoFrame *)frame];
@@ -248,6 +247,7 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
     _rtmp->m_connCallback = ConnectionTimeCallback;
     _rtmp->m_userData = (__bridge void *)self;
     _rtmp->m_msgCounter = 1;
+    _rtmp->Link.timeout = RTMP_RECEIVE_TIMEOUT;
     //设置可写，即发布流，这个函数必须在连接前使用，否则无效
     PILI_RTMP_EnableWrite(_rtmp);
     
@@ -344,10 +344,9 @@ Failed:
 }
 
 - (void)sendVideoHeader:(LFVideoFrame *)videoFrame {
-    if (!videoFrame || !videoFrame.sps || !videoFrame.pps) return;
-    
-    self.sendVideoHead = YES;
-    
+    if (!videoFrame || !videoFrame.sps || !videoFrame.pps ||
+        !videoFrame.isKeyFrame)
+        return;
     unsigned char *body = NULL;
     NSInteger iIndex = 0;
     NSInteger rtmpLength = 1024;
