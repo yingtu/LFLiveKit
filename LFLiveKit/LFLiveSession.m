@@ -13,7 +13,6 @@
 #import "LFHardwareVideoEncoder.h"
 #import "LFLiveStreamInfo.h"
 #import "LFStreamRtmpSocket.h"
-#import "LFStreamTcpSocket.h"
 #import "LFVideoCapture.h"
 
 #define LFLiveReportKey @"com.youku.liveSessionReport"
@@ -23,8 +22,6 @@ LFAudioEncodingDelegate, LFVideoEncodingDelegate,
 LFStreamSocketDelegate> {
     dispatch_semaphore_t _lock;
 }
-///流媒体格式
-@property(nonatomic, assign) LFLiveType liveType;
 ///音频配置
 @property(nonatomic, strong) LFLiveAudioConfiguration *audioConfiguration;
 ///视频配置
@@ -69,8 +66,7 @@ LFStreamSocketDelegate> {
 #pragma mark-- LifeCycle
 - (instancetype)
 initWithAudioConfiguration:(LFLiveAudioConfiguration *)audioConfiguration
-videoConfiguration:(LFLiveVideoConfiguration *)videoConfiguration
-liveType:(LFLiveType)liveType {
+videoConfiguration:(LFLiveVideoConfiguration *)videoConfiguration {
     if (!audioConfiguration || !videoConfiguration)
         @throw [NSException
                 exceptionWithName:@"LFLiveSession init error"
@@ -79,7 +75,6 @@ liveType:(LFLiveType)liveType {
     if (self = [super init]) {
         _audioConfiguration = audioConfiguration;
         _videoConfiguration = videoConfiguration;
-        _liveType = liveType;
         _lock = dispatch_semaphore_create(1);
     }
     return self;
@@ -309,19 +304,11 @@ liveType:(LFLiveType)liveType {
 
 - (id<LFStreamSocket>)socket {
     if (!_socket) {
-        if (self.liveType == LFLiveRTMP) {
-            _socket = [[LFStreamRtmpSocket alloc]
-                       initWithStream:self.streamInfo
-                       videoSize:self.videoConfiguration.videoSize
-                       reconnectInterval:self.reconnectInterval
-                       reconnectCount:self.reconnectCount];
-        } else if (self.liveType == LFLiveFLV) {
-            _socket = [[LFStreamTcpSocket alloc]
-                       initWithStream:self.streamInfo
-                       videoSize:self.videoConfiguration.videoSize
-                       reconnectInterval:self.reconnectInterval
-                       reconnectCount:self.reconnectCount];
-        }
+        _socket = [[LFStreamRtmpSocket alloc]
+                   initWithStream:self.streamInfo
+                   videoSize:self.videoConfiguration.videoSize
+                   reconnectInterval:self.reconnectInterval
+                   reconnectCount:self.reconnectCount];
         [_socket setDelegate:self];
     }
     return _socket;
