@@ -377,9 +377,7 @@ Failed:
 }
 
 - (void)sendVideoHeader:(LFVideoFrame *)videoFrame {
-    if (!videoFrame || !videoFrame.sps || !videoFrame.pps ||
-        !videoFrame.isKeyFrame)
-        return;
+    if (!videoFrame || !videoFrame.sps || !videoFrame.pps) return;
     
     unsigned char *body = NULL;
     NSInteger iIndex = 0;
