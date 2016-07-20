@@ -76,6 +76,9 @@ BOOL isFirstKeyframeSended;  //强制第一帧必须是关键帧
 @property(nonatomic, assign)
 BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
 
+@property(nonatomic, assign) int observeCount;
+@property(nonatomic, strong) CADisplayLink *timer;
+
 @end
 
 @implementation LFStreamRtmpSocket
@@ -104,6 +107,31 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
     return self;
 }
 
+- (void)startObserving {
+    _observeCount = 0;
+    if (!_timer) {
+        _timer =
+        [CADisplayLink displayLinkWithTarget:self selector:@selector(observe)];
+    }
+    [_timer addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+}
+
+- (void)stopObserving {
+    _observeCount = 0;
+    [_timer removeFromRunLoop:[NSRunLoop mainRunLoop]
+                      forMode:NSRunLoopCommonModes];
+}
+
+- (void)observe {
+    if (_isConnected && _observeCount > 300) {
+        dispatch_async(YYRtmpSendQueue(), ^{
+            [self _stop];
+            [self _start];
+            NSLog(@"rtmp reconnect by observer");
+        });
+    }
+}
+
 - (void)start {
     dispatch_async(YYRtmpSendQueue(), ^{
         [self _start];
@@ -122,9 +150,14 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
 }
 
 - (void)stop {
-    dispatch_async(YYRtmpSendQueue(), ^{
-        [self _stop];
-    });
+    @try {
+        dispatch_async(YYRtmpSendQueue(), ^{
+            [self stopObserving];
+            
+            [self _stop];
+        });
+    } @catch (NSException *exception) {
+    }
 }
 
 - (void)_stop {
@@ -138,6 +171,8 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
         _rtmp = NULL;
     }
     [self clean];
+    
+    _observeCount = 0;
 }
 
 - (void)sendFrame:(LFFrame *)frame {
@@ -166,7 +201,7 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
         if ([frame isKindOfClass:[LFAudioFrame class]] && !self.isAudioSendStart) {
             return;
         }
-        
+        if (_isConnected) _observeCount++;
         [weakSelf.buffer appendObject:frame];
         [weakSelf sendFrame];
     });
@@ -209,6 +244,7 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
                 self.debugInfo.capturedVideoCount++;
             }
             self.debugInfo.unSendCount = self.buffer.list.count;
+            
         } else {
             self.debugInfo.currentBandwidth = self.debugInfo.bandwidth;
             self.debugInfo.currentCapturedAudioCount =
@@ -225,6 +261,7 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
             self.debugInfo.capturedAudioCount = 0;
             self.debugInfo.capturedVideoCount = 0;
             self.debugInfo.timeStamp = CACurrentMediaTime() * 1000;
+            _observeCount = 0;
         }
     }
 }
@@ -288,7 +325,7 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
         [self.delegate respondsToSelector:@selector(socketStatus:status:)]) {
         [self.delegate socketStatus:self status:LFLiveStart];
     }
-    
+    [self startObserving];
     [self sendMetaData];
     
     _isConnected = YES;

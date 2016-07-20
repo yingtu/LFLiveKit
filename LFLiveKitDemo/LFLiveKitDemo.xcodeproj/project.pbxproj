@@ -186,12 +186,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 840763191D07C7D0000FD0BF /* Build configuration list for PBXNativeTarget "LFLiveKitDemo" */;
 			buildPhases = (
-				7E4C7C5523618A0595228010 /* 📦 Check Pods Manifest.lock */,
+				7E4C7C5523618A0595228010 /* [CP] Check Pods Manifest.lock */,
 				840762E81D07C7D0000FD0BF /* Sources */,
 				840762E91D07C7D0000FD0BF /* Frameworks */,
 				840762EA1D07C7D0000FD0BF /* Resources */,
-				E4007BB7D4B0E165011BF22F /* 📦 Embed Pods Frameworks */,
-				64FCFF97E6544B1C8F282394 /* 📦 Copy Pods Resources */,
+				E4007BB7D4B0E165011BF22F /* [CP] Embed Pods Frameworks */,
+				64FCFF97E6544B1C8F282394 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -213,6 +213,7 @@
 				TargetAttributes = {
 					840762EB1D07C7D0000FD0BF = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = 54WTX943CJ;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -260,14 +261,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		64FCFF97E6544B1C8F282394 /* 📦 Copy Pods Resources */ = {
+		64FCFF97E6544B1C8F282394 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -275,14 +276,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LFLiveKitDemo/Pods-LFLiveKitDemo-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7E4C7C5523618A0595228010 /* 📦 Check Pods Manifest.lock */ = {
+		7E4C7C5523618A0595228010 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -290,14 +291,14 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		E4007BB7D4B0E165011BF22F /* 📦 Embed Pods Frameworks */ = {
+		E4007BB7D4B0E165011BF22F /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -424,12 +425,15 @@
 			baseConfigurationReference = 7FAA55DD93CD7AB58E7A977A /* Pods-LFLiveKitDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = LFLiveKitDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.youku.LFLiveKit.LFLiveKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -438,12 +442,15 @@
 			baseConfigurationReference = 195672426061368F86F1F4FA /* Pods-LFLiveKitDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = LFLiveKitDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.youku.LFLiveKit.LFLiveKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
