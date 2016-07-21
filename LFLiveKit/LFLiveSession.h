@@ -110,6 +110,7 @@ NS_DESIGNATED_INITIALIZER;
 
 /** The stop stream .*/
 - (void)stopLive;
-
+/** Free session timer */
+- (void)freeSession;
 @end
 

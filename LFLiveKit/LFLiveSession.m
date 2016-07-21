@@ -85,6 +85,10 @@ videoConfiguration:(LFLiveVideoConfiguration *)videoConfiguration {
     self.videoCaptureSource.running = NO;
 }
 
+- (void)freeSession {
+    [self.socket free];
+}
+
 #pragma mark-- CustomMethod
 - (void)startLive:(LFLiveStreamInfo *)streamInfo {
     if (!streamInfo) return;

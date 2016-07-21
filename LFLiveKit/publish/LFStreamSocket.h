@@ -33,6 +33,7 @@
 @protocol LFStreamSocket<NSObject>
 - (void)start;
 - (void)stop;
+- (void)free;
 - (void)sendFrame:(nullable LFFrame*)frame;
 - (void)setDelegate:(nullable id<LFStreamSocketDelegate>)delegate;
 @optional
