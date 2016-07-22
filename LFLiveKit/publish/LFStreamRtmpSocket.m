@@ -14,6 +14,7 @@ static const NSInteger RetryTimesBreaken =
 static const NSInteger RetryTimesMargin = 3;
 
 #define RTMP_RECEIVE_TIMEOUT 2
+#define RTMP_SEND_TIMEOUT 5
 #define DATA_ITEMS_MAX_COUNT 100
 #define RTMP_DATA_RESERVE_SIZE 400
 #define RTMP_HEAD_SIZE (sizeof(RTMPPacket) + RTMP_MAX_HEADER_SIZE)
@@ -172,10 +173,11 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
             LFVideoFrame *videoFrame = (LFVideoFrame *)frame;
             if (videoFrame.isKeyFrame) {
                 self.isFirstKeyframeSended = YES;
+                typeof(self) __weak weakSelf = self;
                 dispatch_after(
                                dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)),
                                dispatch_get_main_queue(), ^{
-                                   self.isAudioSendStart = YES;
+                                   weakSelf.isAudioSendStart = YES;
                                });
             } else {
                 return;
@@ -276,7 +278,6 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
     _sendVideoHead = NO;
     self.debugInfo = nil;
     [self.buffer removeAllObject];
-    self.retryTimes4netWorkBreaken = 0;
 }
 
 - (NSInteger)RTMP264_Connect:(char *)push_url {
@@ -309,6 +310,7 @@ BOOL isAudioSendStart;  //在发送视频第一帧之后再发送音频
     _rtmp->m_userData = (__bridge void *)self;
     _rtmp->m_msgCounter = 1;
     _rtmp->Link.timeout = RTMP_RECEIVE_TIMEOUT;
+    _rtmp->Link.send_timeout = RTMP_SEND_TIMEOUT;
     //设置可写，即发布流，这个函数必须在连接前使用，否则无效
     PILI_RTMP_EnableWrite(_rtmp);
     
@@ -340,15 +342,35 @@ Failed:
     PILI_RTMP_Close(_rtmp, &_error);
     PILI_RTMP_Free(_rtmp);
     _rtmp = NULL;
-    if (self.delegate &&
-        [self.delegate respondsToSelector:@selector(socketDidError:errorCode:)]) {
-        [self.delegate socketDidError:self
-                            errorCode:LFLiveSocketError_ConnectSocket];
+    
+    if (_retryTimes4netWorkBreaken < 2) {
+        if (self.delegate &&
+            [self.delegate
+             respondsToSelector:@selector(socketDidError:errorCode:)]) {
+                [self.delegate socketDidError:self
+                                    errorCode:LFLiveSocketError_ConnectSocket];
+            }
+        if (self.delegate &&
+            [self.delegate respondsToSelector:@selector(socketStatus:status:)]) {
+            [self.delegate socketStatus:self status:LFLiveError];
+        }
     }
-    if (self.delegate &&
-        [self.delegate respondsToSelector:@selector(socketStatus:status:)]) {
-        [self.delegate socketStatus:self status:LFLiveError];
+    
+    if (_retryTimes4netWorkBreaken++ < self.reconnectCount &&
+        !self.isReconnecting) {
+        self.isConnected = NO;
+        self.isConnecting = NO;
+        self.isReconnecting = YES;
+        
+        typeof(self) __weak weakSelf = self;
+        dispatch_after(
+                       dispatch_time(DISPATCH_TIME_NOW,
+                                     (int64_t)(self.reconnectInterval * NSEC_PER_SEC)),
+                       dispatch_get_main_queue(), ^{
+                           [weakSelf reconnect];
+                       });
     }
+    
     return -1;
 }
 
