@@ -11,69 +11,72 @@
 
 @implementation LFLiveAudioConfiguration
 
-#pragma mark -- LifyCycle
-+ (instancetype)defaultConfiguration{
-    LFLiveAudioConfiguration *audioConfig = [LFLiveAudioConfiguration defaultConfigurationForQuality:LFLiveAudioQuality_Default];
+#pragma mark-- LifyCycle
++ (instancetype)defaultConfiguration {
+    LFLiveAudioConfiguration *audioConfig = [LFLiveAudioConfiguration
+                                             defaultConfigurationForQuality:LFLiveAudioQuality_Default];
     return audioConfig;
 }
 
-+ (instancetype)defaultConfigurationForQuality:(LFLiveAudioQuality)audioQuality{
++ (instancetype)defaultConfigurationForQuality:
+(LFLiveAudioQuality)audioQuality {
     LFLiveAudioConfiguration *audioConfig = [LFLiveAudioConfiguration new];
     audioConfig.numberOfChannels = 2;
     switch (audioQuality) {
-        case LFLiveAudioQuality_Default:{
+        case LFLiveAudioQuality_Default: {
             audioConfig.audioBitrate = LFLiveAudioBitRate_64Kbps;
-        }
-            break;
-        case LFLiveAudioQuality_Low:{
+        } break;
+        case LFLiveAudioQuality_Low: {
             audioConfig.audioBitrate = LFLiveAudioBitRate_32Kbps;
-        }
-        case LFLiveAudioQuality_High:{
+        } break;
+        case LFLiveAudioQuality_High: {
             audioConfig.audioBitrate = LFLiveAudioBitRate_96Kbps;
-        }
-        case LFLiveAudioQuality_VeryHigh:{
+        } break;
+        case LFLiveAudioQuality_VeryHigh: {
             audioConfig.audioBitrate = LFLiveAudioBitRate_128Kbps;
-        }
-            break;
+        } break;
         default:
             break;
     }
-    audioConfig.audioSampleRate = [self.class isNewThaniPhone6] ? LFLiveAudioSampleRate_48000Hz : LFLiveAudioSampleRate_44100Hz;
+    audioConfig.audioSampleRate = [self.class isNewThaniPhone6]
+    ? LFLiveAudioSampleRate_48000Hz
+    : LFLiveAudioSampleRate_44100Hz;
     
     return audioConfig;
 }
 
-- (instancetype)init{
-    if(self = [super init]){
+- (instancetype)init {
+    if (self = [super init]) {
         _asc = malloc(2);
     }
     return self;
 }
 
-- (void)dealloc{
-    if(_asc) free(_asc);
+- (void)dealloc {
+    if (_asc) free(_asc);
 }
 
 #pragma mark Setter
-- (void)setAudioSampleRate:(LFLiveAudioSampleRate)audioSampleRate{
+- (void)setAudioSampleRate:(LFLiveAudioSampleRate)audioSampleRate {
     _audioSampleRate = audioSampleRate;
     NSInteger sampleRateIndex = [self sampleRateIndex:audioSampleRate];
-    self.asc[0] = 0x10 | ((sampleRateIndex>>1) & 0x3);
-    self.asc[1] = ((sampleRateIndex & 0x1)<<7) | ((self.numberOfChannels & 0xF) << 3);
+    self.asc[0] = 0x10 | ((sampleRateIndex >> 1) & 0x3);
+    self.asc[1] =
+    ((sampleRateIndex & 0x1) << 7) | ((self.numberOfChannels & 0xF) << 3);
 }
 
-- (void)setNumberOfChannels:(NSUInteger)numberOfChannels{
+- (void)setNumberOfChannels:(NSUInteger)numberOfChannels {
     _numberOfChannels = numberOfChannels;
     NSInteger sampleRateIndex = [self sampleRateIndex:self.audioSampleRate];
-    self.asc[0] = 0x10 | ((sampleRateIndex>>1) & 0x3);
-    self.asc[1] = ((sampleRateIndex & 0x1)<<7) | ((numberOfChannels & 0xF) << 3);
+    self.asc[0] = 0x10 | ((sampleRateIndex >> 1) & 0x3);
+    self.asc[1] =
+    ((sampleRateIndex & 0x1) << 7) | ((numberOfChannels & 0xF) << 3);
 }
 
-
-#pragma mark -- CustomMethod
-- (NSInteger)sampleRateIndex:(NSInteger)frequencyInHz{
+#pragma mark-- CustomMethod
+- (NSInteger)sampleRateIndex:(NSInteger)frequencyInHz {
     NSInteger sampleRateIndex = 0;
-    switch(frequencyInHz) {
+    switch (frequencyInHz) {
         case 96000:
             sampleRateIndex = 0;
             break;
@@ -119,9 +122,8 @@
     return sampleRateIndex;
 }
 
-
-#pragma mark -- DeviceCategory
-+(NSString*)deviceName{
+#pragma mark-- DeviceCategory
++ (NSString *)deviceName {
     struct utsname systemInfo;
     uname(&systemInfo);
     
@@ -139,14 +141,14 @@
 //@"iPhone8,1" on iPhone 6S
 //@"iPhone8,2" on iPhone 6S Plus
 
-+(BOOL) isNewThaniPhone6{
++ (BOOL)isNewThaniPhone6 {
     NSString *device = [self deviceName];
     NSLog(@"device %@", device);
     if (device == nil) {
         return NO;
     }
     NSArray *array = [device componentsSeparatedByString:@","];
-    if (array.count <2) {
+    if (array.count < 2) {
         return NO;
     }
     NSString *model = [array objectAtIndex:0];
@@ -171,7 +173,7 @@
     return NO;
 }
 
-#pragma mark -- Encoder
+#pragma mark-- Encoder
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     [aCoder encodeObject:@(self.numberOfChannels) forKey:@"numberOfChannels"];
     [aCoder encodeObject:@(self.audioSampleRate) forKey:@"audioSampleRate"];
@@ -181,14 +183,18 @@
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super init];
-    _numberOfChannels = [[aDecoder decodeObjectForKey:@"numberOfChannels"] unsignedIntegerValue];
-    _audioSampleRate = [[aDecoder decodeObjectForKey:@"audioSampleRate"] unsignedIntegerValue];
-    _audioBitrate = [[aDecoder decodeObjectForKey:@"audioBitrate"] unsignedIntegerValue];
-    _asc = strdup([[aDecoder decodeObjectForKey:@"asc"] cStringUsingEncoding:NSUTF8StringEncoding]);
+    _numberOfChannels =
+    [[aDecoder decodeObjectForKey:@"numberOfChannels"] unsignedIntegerValue];
+    _audioSampleRate =
+    [[aDecoder decodeObjectForKey:@"audioSampleRate"] unsignedIntegerValue];
+    _audioBitrate =
+    [[aDecoder decodeObjectForKey:@"audioBitrate"] unsignedIntegerValue];
+    _asc = strdup([[aDecoder decodeObjectForKey:@"asc"]
+                   cStringUsingEncoding:NSUTF8StringEncoding]);
     return self;
 }
 
-- (BOOL)isEqual:(id)other{
+- (BOOL)isEqual:(id)other {
     if (other == self) {
         return YES;
     } else if (![super isEqual:other]) {
@@ -204,10 +210,10 @@
 
 - (NSUInteger)hash {
     NSUInteger hash = 0;
-    NSArray *values = @[@(_numberOfChannels),
-                        @(_audioSampleRate),
-                        [NSString stringWithUTF8String:self.asc],
-                        @(_audioBitrate)];
+    NSArray *values = @[
+                        @(_numberOfChannels), @(_audioSampleRate),
+                        [NSString stringWithUTF8String:self.asc], @(_audioBitrate)
+                        ];
     
     for (NSObject *value in values) {
         hash ^= value.hash;
@@ -215,18 +221,19 @@
     return hash;
 }
 
-- (id)copyWithZone:(nullable NSZone *)zone{
+- (id)copyWithZone:(nullable NSZone *)zone {
     LFLiveAudioConfiguration *other = [self.class defaultConfiguration];
     return other;
 }
 
-- (NSString *)description{
+- (NSString *)description {
     NSMutableString *desc = @"".mutableCopy;
-    [desc appendFormat:@"<LFLiveAudioConfiguration: %p>",self];
-    [desc appendFormat:@" numberOfChannels:%zi",self.numberOfChannels];
-    [desc appendFormat:@" audioSampleRate:%zi",self.audioSampleRate];
-    [desc appendFormat:@" audioBitrate:%zi",self.audioBitrate];
-    [desc appendFormat:@" audioHeader:%@",[NSString stringWithUTF8String:self.asc]];
+    [desc appendFormat:@"<LFLiveAudioConfiguration: %p>", self];
+    [desc appendFormat:@" numberOfChannels:%zi", self.numberOfChannels];
+    [desc appendFormat:@" audioSampleRate:%zi", self.audioSampleRate];
+    [desc appendFormat:@" audioBitrate:%zi", self.audioBitrate];
+    [desc appendFormat:@" audioHeader:%@",
+     [NSString stringWithUTF8String:self.asc]];
     return desc;
 }
 

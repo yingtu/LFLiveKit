@@ -19,6 +19,8 @@
 @property(nonatomic, strong) GPUImageOutput<GPUImageInput> *output;
 @property(nonatomic, strong) GPUImageCropFilter *cropfilter;
 @property(nonatomic, strong) GPUImageView *gpuImageView;
+@property(nonatomic, strong) GPUImageAlphaBlendFilter *blendFilter;
+@property(nonatomic, strong) GPUImageUIElement *uiElementInput;
 @property(nonatomic, strong) LFLiveVideoConfiguration *configuration;
 
 @end
@@ -147,6 +149,7 @@
 }
 
 - (NSInteger)videoFrameRate {
+    NSLog(@"%d", _videoCamera.frameRate);
     return _videoCamera.frameRate;
 }
 
@@ -244,6 +247,8 @@
         }];
     }
     
+    //[self addWatermark];
+    
     if (_configuration.isClipVideo) {
         if (_configuration.landscape) {
             _cropfilter = [[GPUImageCropFilter alloc]
@@ -258,6 +263,9 @@
         [_videoCamera addTarget:_filter];
     }
     
+    //添加水印时使用，要把下面的一段注释掉
+    //[_filter addTarget:_output];
+    
     if (_beautyFace) {
         [_filter addTarget:_output];
         [_output addTarget:_gpuImageView];
@@ -270,6 +278,37 @@
     } else {
         [_gpuImageView setInputRotation:kGPUImageNoRotation atIndex:0];
     }
+}
+
+- (void)addWatermark {
+    if (!_blendFilter) {
+        _blendFilter = [[GPUImageAlphaBlendFilter alloc] init];
+        _blendFilter.mix = 0.4;
+    }
+    UIView *watermark =
+    [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    watermark.backgroundColor = [UIColor clearColor];
+    UIImageView *icon = [[UIImageView alloc]
+                         initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 72, 12,
+                                                  60, 22)];
+    UIImage *img = [UIImage imageNamed:@"LiveKit.bundle/watermark"];
+    icon.image = img;
+    [watermark addSubview:icon];
+    
+    if (!_uiElementInput) {
+        _uiElementInput = [[GPUImageUIElement alloc] initWithView:watermark];
+    }
+    [_filter addTarget:_blendFilter];
+    [_uiElementInput addTarget:_blendFilter];
+    [_blendFilter addTarget:_gpuImageView];
+    
+    _beautyFilter = nil;
+    __weak typeof(self) _self = self;
+    __unsafe_unretained GPUImageUIElement *weakUIElementInput = _uiElementInput;
+    [_filter
+     setFrameProcessingCompletionBlock:^(GPUImageOutput *output, CMTime time) {
+         [weakUIElementInput update];
+     }];
 }
 
 #pragma mark-- Custom Method

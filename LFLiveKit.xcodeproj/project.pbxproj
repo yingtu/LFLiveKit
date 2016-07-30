@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		717AF5811D4C4B8600CE11DF /* LiveKit.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 717AF5801D4C4B8600CE11DF /* LiveKit.bundle */; };
 		84001F8E1D0015D10026C63F /* LFLiveKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 84001F8D1D0015D10026C63F /* LFLiveKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		84001F951D0015D10026C63F /* LFLiveKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84001F8A1D0015D10026C63F /* LFLiveKit.framework */; };
 		84001F9A1D0015D10026C63F /* LFLiveKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 84001F991D0015D10026C63F /* LFLiveKitTests.m */; };
@@ -67,6 +68,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		717AF5801D4C4B8600CE11DF /* LiveKit.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = LiveKit.bundle; sourceTree = "<group>"; };
 		84001F8A1D0015D10026C63F /* LFLiveKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LFLiveKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		84001F8D1D0015D10026C63F /* LFLiveKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LFLiveKit.h; sourceTree = "<group>"; };
 		84001F8F1D0015D10026C63F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 		84001F801D0015D10026C63F = {
 			isa = PBXGroup;
 			children = (
+				717AF5801D4C4B8600CE11DF /* LiveKit.bundle */,
 				84001F8C1D0015D10026C63F /* LFLiveKit */,
 				84001F981D0015D10026C63F /* LFLiveKitTests */,
 				84001F8B1D0015D10026C63F /* Products */,
@@ -405,6 +408,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				717AF5811D4C4B8600CE11DF /* LiveKit.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

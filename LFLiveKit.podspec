@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
 
   s.frameworks = "VideoToolbox", "AudioToolbox","AVFoundation","Foundation","UIKit"
   s.library   = "z"
-
+  s.resources ='LiveKit.bundle'
   s.requires_arc = true
 
   s.dependency "CocoaAsyncSocket", "~> 7.4.1"
